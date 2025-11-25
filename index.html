@@ -10,10 +10,8 @@
         html,body{height:100%;width:100%;overflow:hidden;touch-action:pan-x pan-y pinch-zoom;}
         body{
             font-family:'Press Start 2P',cursive;
-            background:#0b1b3a;
-            color:#fff;
-            height:100dvh;
-            image-rendering:pixelated;
+            background:#0b1b3a;color:#fff;
+            height:100dvh;image-rendering:pixelated;
             background-image:
                 radial-gradient(circle at 20% 80%,#5acaff 0%,transparent 50%),
                 radial-gradient(circle at 80% 20%,#fffd99 0%,transparent 50%),
@@ -38,23 +36,22 @@
             position:absolute;width:120px;
             transform:translate(-50%,-50%);
             image-rendering:pixelated;z-index:10;
-            animation:pop .25s ease-out;
         }
+
         @keyframes pop{from{transform:translate(-50%,-50%) scale(0)}to{transform:translate(-50%,-50%) scale(1)}}
+        @keyframes up{to{transform:translateY(-120px);opacity:0}}
 
         .plus-one{
             position:absolute;font-size:3rem;color:#ffff00;
             text-shadow:3px 3px #ff0000;pointer-events:none;
             animation:up .9s forwards;z-index:50;
         }
-        @keyframes up{to{transform:translateY(-120px);opacity:0}}
 
         #start-screen,#end-screen{
             position:fixed;inset:0;background:#000d;
             backdrop-filter:blur(6px);display:flex;
             flex-direction:column;align-items:center;
-            justify-content:center;text-align:center;z-index:200;
-            padding:20px;
+            justify-content:center;text-align:center;z-index:200;padding:20px;
         }
         #final-score{font-size:5.5rem;color:#ffff00;text-shadow:6px 6px #ff0000;}
         .share-btn{
@@ -63,10 +60,7 @@
             border:8px solid #fff;box-shadow:10px 10px 0 #000;
             animation:pulse 2s infinite;
         }
-        @keyframes pulse{
-            0%,100%{transform:scale(1)}
-            50%{transform:scale(1.05)}
-        }
+        @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
 
         @media (max-width:600px){
             h1{font-size:1.8rem;}
@@ -81,7 +75,6 @@
 <body>
 
     <audio id="hit" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="></audio>
-    <audio id="end" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="></audio>
 
     <div id="start-screen">
         <h1>ПОЙМАЙ<br>ПИКАЧУ!</h1>
@@ -107,26 +100,33 @@
     </div>
 
     <script>
-        const p=document.getElementById('pikachu');
-        const hit=document.getElementById('hit');
-        const endSound=document.getElementById('end');
-        const scoreEl=document.getElementById('score'),timerEl=document.getElementById('timer'),levelEl=document.getElementById('level');
-        const finalScore=document.getElementById('final-score'),finalLevel=document.getElementById('final-level');
-        
-        let score=0,time=30,level=1,vx=8,vy=8,running=false;
-        const MAX_SPEED=26;  // теперь даже на 100+ пойманных всё по-человечески
+        const p = document.getElementById('pikachu');
+        const hit = document.getElementById('hit');
+        const scoreEl = document.getElementById('score'), timerEl = document.getElementById('timer'), levelEl = document.getElementById('level');
+        const finalScore = document.getElementById('final-score'), finalLevel = document.getElementById('final-level');
 
-        function randPos(){
-            p.style.left=Math.random()*(innerWidth-120)+60+'px';
-            p.style.top=Math.random()*(innerHeight-120)+60+'px';
-            p.style.animation='none';
-            requestAnimationFrame(()=>p.style.animation='pop .25s ease-out');
+        let score = 0, time = 30, level = 1, vx = 8, vy = 8, running = false;
+        const MAX_SPEED = 26;
+        const PIKA_SIZE = 120; // ширина Пикачу в px
+
+        // Функция безопасного телепорта
+        function randPos() {
+            const maxX = innerWidth - PIKA_SIZE;
+            const maxY = innerHeight - PIKA_SIZE;
+            const x = Math.max(PIKA_SIZE/2, Math.min(Math.random() * maxX + PIKA_SIZE/2, innerWidth - PIKA_SIZE/2));
+            const y = Math.max(PIKA_SIZE/2, Math.min(Math.random() * maxY + PIKA_SIZE/2, innerHeight - PIKA_SIZE/2));
+            p.style.left = x + 'px';
+            p.style.top = y + 'px';
+            p.style.animation = 'none';
+            requestAnimationFrame(() => p.style.animation = 'pop .25s ease-out');
         }
+
         function plusOne(x,y){
             const el=document.createElement('div');el.className='plus-one';el.textContent='+1';
             el.style.left=x+'px';el.style.top=(y-50)+'px';document.body.appendChild(el);
             setTimeout(()=>el.remove(),900);
         }
+
         function startGame(){
             document.getElementById('start-screen').style.display='none';
             document.getElementById('end-screen').style.display='none';
@@ -137,43 +137,61 @@
             window.t=setInterval(()=>{if(--time<=0)endGame();timerEl.textContent=time;},1000);
             move();
         }
+
         function move(){
             if(!running)return;
-            let x=parseFloat(p.style.left),y=parseFloat(p.style.top);
-            x+=vx;y+=vy;
-            if(x<60||x>innerWidth-60)vx=-vx*1.05;
-            if(y<60||y>innerHeight-60)vy=-vy*1.05;
-            p.style.left=x+'px';p.style.top=y+'px';
+            let x = parseFloat(p.style.left);
+            let y = parseFloat(p.style.top);
+
+            x += vx; y += vy;
+
+            // Жёсткие границы — никогда не улетит
+            if (x <= PIKA_SIZE/2 || x >= innerWidth - PIKA_SIZE/2) vx = -vx * 1.05;
+            if (y <= PIKA_SIZE/2 || y >= innerHeight - PIKA_SIZE/2) vy = -vy * 1.05;
+
+            // Дополнительная страховка
+            x = Math.max(PIKA_SIZE/2, Math.min(x, innerWidth - PIKA_SIZE/2));
+            y = Math.max(PIKA_SIZE/2, Math.min(y, innerHeight - PIKA_SIZE/2));
+
+            p.style.left = x + 'px';
+            p.style.top = y + 'px';
             requestAnimationFrame(move);
         }
+
         function catchPikachu(e){
             if(!running)return;e.preventDefault();
             score++;scoreEl.textContent=score;
             if(score%10===0)levelEl.textContent=++level;
             const t=e.touches?e.touches[0]:e;
             plusOne(t.clientX,t.clientY);
-            hit.currentTime=0;hit.play().catch(()=>{});navigator.vibrate?.([50]);
-            // Плавное ускорение с жёстким лимитом
-            const boost = 1 + (score/200); // после 100 пойманных почти не растёт
-            vx=Math.sign(vx)*Math.min(Math.abs(vx)*boost,MAX_SPEED);
-            vy=Math.sign(vy)*Math.min(Math.abs(vy)*boost,MAX_SPEED);
+            hit.currentTime=0;hit.play().catch(()=>{});
+            navigator.vibrate?.([50]);
+
+            const boost = 1 + (score/300); // ещё медленнее растёт
+            vx = Math.sign(vx)*Math.min(Math.abs(vx)*boost, MAX_SPEED);
+            vy = Math.sign(vy)*Math.min(Math.abs(vy)*boost, MAX_SPEED);
+
             randPos();
         }
+
         function endGame(){
             running=false;clearInterval(window.t);
             finalScore.textContent=score;finalLevel.textContent=level;
             document.getElementById('end-screen').style.display='flex';
-            endSound.currentTime=0;endSound.play().catch(()=>{});navigator.vibrate?.(200);
+            navigator.vibrate?.(200);
         }
+
         p.addEventListener('click',catchPikachu);
         p.addEventListener('touchstart',catchPikachu);
 
-        // Блокируем случайный свайп-вниз и pull-to-refresh
+        // Блокировка pull-to-refresh
         document.body.addEventListener('touchmove', e => {
             if (e.touches.length > 1) return;
-            const touch = e.touches[0];
-            if (touch.clientY < 100) e.preventDefault();
+            if (e.touches[0].clientY < 80) e.preventDefault();
         }, {passive:false});
+
+        // Перерасчёт при повороте экрана
+        window.addEventListener('resize', () => { if(running) randPos(); });
     </script>
 </body>
 </html>
