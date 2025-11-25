@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поймай Пикачу!</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Comic Sans MS', Arial, sans-serif;
+            background: linear-gradient(135deg, #ffeb3b, #ff9800);
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+        #start-screen {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        h1 { font-size: 5rem; text-shadow: 6px 6px #d32f2f; }
+        button {
+            margin-top: 30px;
+            padding: 20px 60px;
+            font-size: 2.5rem;
+            background: #ffeb3b;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 12px #d32f2f;
+            transition: all 0.2s;
+        }
+        button:active { transform: translateY(8px); box-shadow: 0 4px #d32f2f; }
+
+        #game { position: relative; width: 100vw; height: 100vh; display: none; }
+        #pikachu {
+            position: absolute;
+            width: 130px;
+            cursor: pointer;
+            transition: transform 0.1s;
+            z-index: 10;
+        }
+
+        /* Анимированный +1 */
+        .plus-one {
+            position: absolute;
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ff1744;
+            text-shadow: 3px 3px white;
+            pointer-events: none;
+            z-index: 50;
+            animation: floatUp 1s ease-out forwards;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-100px); opacity: 0; }
+        }
+
+        /* Вспышка молнии */
+        .lightning {
+            position: absolute;
+            width: 180px; height: 180px;
+            background: radial-gradient(circle, #ffff00, #ff9800, #f44336);
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+            animation: flash 0.7s ease-out forwards;
+        }
+        @keyframes flash {
+            0% { transform: scale(0.3); opacity: 1; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+
+        #ui {
+            position: absolute;
+            top: 20px; left: 20px;
+            color: white;
+            font-size: 2.2rem;
+            text-shadow: 3px 3px 8px black;
+            z-index: 20;
+        }
+        #score { 
+            font-size: 3rem; 
+            color: #ff1744; 
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        #timer { font-size: 3rem; color: #ff1744; }
+    </style>
+</head>
+<body>
+
+    <div id="start-screen">
+        <h1>Поймай Пикачу!</h1>
+        <p style="font-size:2.5rem;margin:30px 0;">30 секунд — поймай как можно больше!</p>
+        <button onclick="startGame()">ИГРАТЬ</button>
+    </div>
+
+    <div id="game">
+        <div id="ui">
+            <div>Счёт: <span id="score">0</span></div>
+            <div>Время: <span id="timer">30</span> сек</div>
+            <div>Уровень: <span id="level">1</span></div>
+        </div>
+        <img id="pikachu" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/25.gif" alt="Пикачу">
+    </div>
+
+    <script>
+        const pikachu = document.getElementById('pikachu');
+        const game = document.getElementById('game');
+        const startScreen = document.getElementById('start-screen');
+        const scoreEl = document.getElementById('score');
+        const timerEl = document.getElementById('timer');
+        const levelEl = document.getElementById('level');
+
+        let score = 0;
+        let timeLeft = 30;
+        let level = 1;
+        let vx = 7;
+        let vy = 7;
+        let gameActive = false;
+        let timerInterval;
+
+        function createPlusOne(x, y) {
+            const plus = document.createElement('div');
+            plus.classList.add('plus-one');
+            plus.textContent = '+1';
+            plus.style.left = x + 'px';
+            plus.style.top = y + 'px';
+            document.body.appendChild(plus);
+            setTimeout(() => plus.remove(), 1000);
+        }
+
+        function startGame() {
+            startScreen.style.display = 'none';
+            game.style.display = 'block';
+
+            score = 0; timeLeft = 30; level = 1;
+            scoreEl.textContent = score;
+            timerEl.textContent = timeLeft;
+            levelEl.textContent = level;
+            gameActive = true;
+
+            pikachu.style.left = '50%';
+            pikachu.style.top = '50%';
+            vx = (Math.random() > 0.5 ? 1 : -1) * 7;
+            vy = (Math.random() > 0.5 ? 1 : -1) * 7;
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerEl.textContent = timeLeft;
+                if (timeLeft <= 0) endGame();
+            }, 1000);
+
+            requestAnimationFrame(movePikachu);
+        }
+
+        function movePikachu() {
+            if (!gameActive) return;
+
+            let x = parseFloat(pikachu.style.left) || innerWidth/2;
+            let y = parseFloat(pikachu.style.top) || innerHeight/2;
+
+            x += vx; y += vy;
+
+            if (x <= 0 || x >= innerWidth - 130) vx = -vx * 1.03;
+            if (y <= 0 || y >= innerHeight - 130) vy = -vy * 1.03;
+
+            pikachu.style.left = x + 'px';
+            pikachu.style.top = y + 'px';
+
+            requestAnimationFrame(movePikachu);
+        }
+
+        pikachu.addEventListener('click', (e) => {
+            if (!gameActive) return;
+
+            score++;
+            scoreEl.textContent = score;
+            scoreEl.style.transform = 'scale(1.3)';
+            setTimeout(() => scoreEl.style.transform = 'scale(1)', 200);
+
+            // +1 над Пикачу
+            const rect = pikachu.getBoundingClientRect();
+            createPlusOne(rect.left + 50, rect.top - 20);
+
+            // Молния
+            const lightning = document.createElement('div');
+            lightning.classList.add('lightning');
+            lightning.style.left = (rect.left - 25) + 'px';
+            lightning.style.top = (rect.top - 25) + 'px';
+            document.body.appendChild(lightning);
+            setTimeout(() => lightning.remove(), 800);
+
+            // Ускорение
+            vx *= 1.18; vy *= 1.18;
+
+            if (score % 10 === 0) {
+                level++;
+                levelEl.textContent = level;
+            }
+
+            // Телепорт
+            pikachu.style.left = Math.random() * (innerWidth - 150) + 'px';
+            pikachu.style.top = Math.random() * (innerHeight - 150) + 'px';
+        });
+
+        function endGame() {
+            gameActive = false;
+            clearInterval(timerInterval);
+            setTimeout(() => {
+                alert(`Время вышло!\n\nТы поймал ${score} Пикачу!\nДостигнут ${level}-й уровень`);
+                startScreen.style.display = 'flex';
+                game.style.display = 'none';
+            }, 500);
+        }
+    </script>
+</body>
+</html>
