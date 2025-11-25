@@ -54,8 +54,13 @@
             justify-content:center;text-align:center;z-index:200;padding:20px;
         }
         #final-score{font-size:5.5rem;color:#ffff00;text-shadow:6px 6px #ff0000;}
+        button.disabled-btn{
+            opacity:.55;filter:grayscale(.4);
+            pointer-events:none;
+        }
+
         .share-btn{
-            margin-top:50px;padding:22px 40px;
+            margin:0 0 40px;padding:22px 40px;
             background:#00ff41;color:#000;font-size:1.6rem;
             border:8px solid #fff;box-shadow:10px 10px 0 #000;
             animation:pulse 2s infinite;
@@ -68,7 +73,7 @@
             #ui{font-size:0.9rem;top:10px;}
             #pikachu{width:100px;}
             #final-score{font-size:3.5rem;}
-            .share-btn{font-size:1.2rem;padding:18px 30px;margin-top:40px;}
+            .share-btn{font-size:1.2rem;padding:18px 30px;margin:0 0 30px;}
         }
     </style>
 </head>
@@ -76,9 +81,9 @@
 
     <audio id="hit" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="></audio>
 
-    <div id="start-screen">
+        <div id="start-screen">
         <h1>ПОЙМАЙ<br>ПИКАЧУ!</h1>
-        <button onclick="startGame()">СТАРТ</button>
+            <button id="start-btn" onclick="startGame()">СТАРТ</button>
     </div>
 
     <div id="ui">
@@ -90,13 +95,13 @@
     <img id="pikachu" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/25.gif">
 
     <div id="end-screen" style="display:none">
+        <button id="share-btn" class="share-btn" onclick="window.open('https://t.me/+kjTWCeGm_TgxMDJi','_blank')">
+            СДЕЛАЙ СКРИНШОТ<br>И ОТПРАВЬ В КАНАЛ<br>ЗАБЕРИ ПРИЗ!
+        </button>
         <h1>ВРЕМЯ ВЫШЛО!</h1>
         <div id="final-score">0</div>
         <p style="margin:25px 0;font-size:1.5rem">УРОВЕНЬ <span id="final-level">1</span></p>
-        <button onclick="startGame()">СНОВА</button>
-        <button class="share-btn" onclick="window.open('https://t.me/+kjTWCeGm_TgxMDJi','_blank')">
-            СДЕЛАЙ СКРИНШОТ<br>И ОТПРАВЬ В КАНАЛ<br>ЗАБЕРИ ПРИЗ!
-        </button>
+        <button id="restart-btn" onclick="startGame()">СНОВА</button>
     </div>
 
     <script>
@@ -104,10 +109,14 @@
         const hit = document.getElementById('hit');
         const scoreEl = document.getElementById('score'), timerEl = document.getElementById('timer'), levelEl = document.getElementById('level');
         const finalScore = document.getElementById('final-score'), finalLevel = document.getElementById('final-level');
+        const shareBtn = document.getElementById('share-btn');
+        const restartBtn = document.getElementById('restart-btn');
 
         let score = 0, time = 30, level = 1, vx = 8, vy = 8, running = false;
+        let endButtonsTimer = null;
         const MAX_SPEED = 26;
         const WALL_DAMPING = 0.95; // небольшое замедление при отскоке
+        const BOTTOM_SAFE_ZONE = 90; // область возле кнопок и системной панели
         const PIKA_SIZE = 120; // ширина Пикачу в px
 
         // Функция безопасного телепорта
@@ -128,6 +137,14 @@
             setTimeout(()=>el.remove(),900);
         }
 
+        function toggleEndButtons(enable){
+            [shareBtn, restartBtn].forEach(btn=>{
+                if(!btn)return;
+                btn.disabled=!enable;
+                btn.classList.toggle('disabled-btn',!enable);
+            });
+        }
+
         function startGame(){
             document.getElementById('start-screen').style.display='none';
             document.getElementById('end-screen').style.display='none';
@@ -135,6 +152,8 @@
             scoreEl.textContent=0;timerEl.textContent=30;levelEl.textContent=1;
             running=true;randPos();
             clearInterval(window.t);
+            if(endButtonsTimer)clearTimeout(endButtonsTimer);
+            toggleEndButtons(true);
             window.t=setInterval(()=>{if(--time<=0)endGame();timerEl.textContent=time;},1000);
             move();
         }
@@ -164,6 +183,7 @@
             score++;scoreEl.textContent=score;
             if(score%10===0)levelEl.textContent=++level;
             const t=e.touches?e.touches[0]:e;
+            if(t.clientY>innerHeight-BOTTOM_SAFE_ZONE)return; // игнорируем случайные тапы внизу
             plusOne(t.clientX,t.clientY);
             hit.currentTime=0;hit.play().catch(()=>{});
             navigator.vibrate?.([50]);
@@ -180,6 +200,8 @@
             finalScore.textContent=score;finalLevel.textContent=level;
             document.getElementById('end-screen').style.display='flex';
             navigator.vibrate?.(200);
+            toggleEndButtons(false);
+            endButtonsTimer=setTimeout(()=>toggleEndButtons(true),1800);
         }
 
         p.addEventListener('click',catchPikachu);
