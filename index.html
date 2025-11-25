@@ -3,162 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-    <title>Поймай Пикачу! ⚡️</title>
+    <title>Поймай Пикачу!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&display=swap');
-
-        * { margin:0; padding:0; box-sizing:border-box; touch-action:manipulation; }
+        * { margin:0; padding:0; box-sizing:border-box; }
         body {
-            font-family: 'Fredoka One', sans-serif;
+            font-family: 'Press Start 2P', cursive;
+            background: #0b1b3a;
+            color: #fff;
             height: 100dvh;
             overflow: hidden;
-            user-select: none;
-            color: #fff;
-            background: radial-gradient(circle at 30% 70%, #83e0ff 0%, #3ab5ff 30%, #0061a8 100%),
-                        radial-gradient(circle at 70% 20%, #ffd05a 0%, #ff9a00 100%);
-            background-blend-mode: overlay;
-            position: relative;
+            image-rendering: pixelated;
+            background-image: 
+                radial-gradient(circle at 20% 80%, #5acaff 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, #fffd99 0%, transparent 50%),
+                linear-gradient(135deg, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%);
         }
-        body::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: url('https://i.ibb.co/Hn7YZ3C/pikachu-field.jpg') center/cover no-repeat;
-            opacity: 0.38;
-            z-index: -1;
-        }
-
-        #start-screen, #end-screen {
-            position: fixed; inset: 0;
-            background: rgba(0,0,0,0.92);
-            backdrop-filter: blur(12px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 20px;
-            z-index: 100;
-        }
-        h1 {
-            font-size: 4.8rem;
-            background: linear-gradient(135deg, #ffeb3b, #ff6b6b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(255,235,59,0.5);
-        }
+        h1 { font-size: 3rem; text-shadow: 4px 4px 0 #ff0000; margin-bottom: 20px; }
         button {
-            margin-top: 40px;
-            padding: 20px 70px;
-            font-size: 2.4rem;
             font-family: inherit;
-            background: #ffeb3b;
-            color: #d32f2f;
-            border: none;
-            border-radius: 50px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.4), inset 0 -5px 15px rgba(0,0,0,0.2);
+            font-size: 1.6rem;
+            padding: 20px 50px;
+            background: #ff0000;
+            color: #fff;
+            border: 6px solid #fff;
+            border-radius: 0;
+            box-shadow: 8px 8px 0 #000;
             cursor: pointer;
-            transition: all 0.25s;
         }
-        button:active {
-            transform: translateY(8px);
-            box-shadow: 0 5px 10px rgba(0,0,0,0.4);
-        }
+        button:active { transform: translate(4px,4px); box-shadow: 4px 4px 0 #000; }
 
-        #game { position: relative; width: 100vw; height: 100dvh; display: none; }
-        #pikachu {
-            position: absolute;
-            width: 140px;
-            transform: translate(-50%,-50%);
-            z-index: 10;
-            filter: drop-shadow(0 0 15px #ffeb3b);
-            pointer-events: auto;
-        }
         #ui {
             position: fixed;
             top: 15px; left: 15px; right: 15px;
             display: flex;
             justify-content: space-between;
-            z-index: 20;
+            z-index: 100;
             pointer-events: none;
+            font-size: 1.4rem;
+            text-shadow: 3px 3px 0 #000;
         }
-        #ui > div {
-            background: rgba(0,0,0,0.45);
-            backdrop-filter: blur(10px);
-            padding: 10px 20px;
-            border-radius: 20px;
-            border: 2px solid rgba(255,255,255,0.2);
-            font-size: 1.8rem;
+        #ui span { color: #ffff00; }
+
+        #pikachu {
+            position: absolute;
+            width: 120px;
+            left: 50%; top: 50%;
+            transform: translate(-50%,-50%);
+            image-rendering: pixelated;
+            z-index: 10;
         }
-        .big { font-size: 2.6rem; color: #ffeb3b; font-weight: bold; }
 
         .plus-one {
             position: absolute;
-            font-size: 4rem;
-            font-weight: bold;
-            color: #ff1744;
-            text-shadow: 0 0 20px white;
+            font-size: 3rem;
+            color: #ffff00;
+            text-shadow: 3px 3px 0 #ff0000;
             pointer-events: none;
-            z-index: 50;
-            animation: up 1s forwards;
+            animation: up 0.8s forwards;
         }
-        @keyframes up { to { transform: translateY(-140px); opacity: 0; } }
+        @keyframes up { to { transform: translateY(-100px); opacity: 0; } }
 
-        .lightning {
-            position: absolute;
-            width: 220px; height: 220px;
-            background: radial-gradient(circle, #ffff0044, #ff9800, #f4433688);
-            border-radius: 50%;
-            pointer-events: none;
-            animation: flash 0.6s forwards;
-            transform: translate(-50%,-50%);
+        #start-screen, #end-screen {
+            position: fixed; inset: 0;
+            background: #000b;
+            backdrop-filter: blur(4px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            z-index: 200;
         }
-        @keyframes flash { to { transform: translate(-50%,-50%) scale(4); opacity: 0; } }
-
-        #final-score { font-size: 7rem; margin: 20px 0; color: #ffeb3b; text-shadow: 0 0 30px #ff1744; }
+        #final-score { font-size: 5rem; color: #ffff00; text-shadow: 5px 5px 0 #ff0000; }
     </style>
 </head>
 <body>
 
     <div id="start-screen">
-        <h1>Поймай Пикачу!</h1>
-        <p style="font-size:2.2rem">30 секунд — лови как можно больше!</p>
-        <button onclick="startGame()">ИГРАТЬ</button>
+        <h1>ПОЙМАЙ<br>ПИКАЧУ!</h1>
+        <button onclick="startGame()">СТАРТ</button>
     </div>
 
-    <div id="game">
-        <div id="ui">
-            <div>Счёт: <span id="score" class="big">0</span></div>
-            <div>Время: <span id="timer" class="big">30</span>с</div>
-            <div>Уровень: <span id="level" class="big">1</span></div>
-        </div>
-        <img id="pikachu" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/25.gif" alt="Пикачу">
+    <div id="ui">
+        <div>Счёт: <span id="score">0</span></div>
+        <div>Время: <span id="timer">30</span></div>
+        <div>Уровень: <span id="level">1</span></div>
     </div>
+
+    <img id="pikachu" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/25.gif">
 
     <div id="end-screen" style="display:none">
-        <h1>Время вышло!</h1>
+        <h1>ВРЕМЯ ВЫШЛО!</h1>
         <div id="final-score">0</div>
-        <p style="font-size:2.5rem">Поймано Пикачу</p>
-        <div style="font-size:2rem;margin:20px 0">Достигнут <span id="final-level">1</span>-й уровень!</div>
-        <button onclick="startGame()">Играть снова</button>
+        <p style="margin:30px 0; font-size:1.5rem">УРОВЕНЬ <span id="final-level">1</span></p>
+        <button onclick="startGame()">СНОВА</button>
     </div>
 
     <script>
         const p = document.getElementById('pikachu');
-        const game = document.getElementById('game');
-        const startScreen = document.getElementById('start-screen');
-        const endScreen = document.getElementById('end-screen');
         const scoreEl = document.getElementById('score');
         const timerEl = document.getElementById('timer');
         const levelEl = document.getElementById('level');
         const finalScore = document.getElementById('final-score');
         const finalLevel = document.getElementById('final-level');
-
-        let score = 0, timeLeft = 30, level = 1, vx = 9, vy = 9, active = false, timer;
+        
+        let score = 0, time = 30, level = 1, vx = 8, vy = 8, running = false, timer;
 
         function randPos() {
-            p.style.left = Math.random() * (innerWidth - 140) + 70 + 'px';
-            p.style.top = Math.random() * (innerHeight - 140) + 70 + 'px';
+            p.style.left = Math.random() * (innerWidth - 120) + 60 + 'px';
+            p.style.top = Math.random() * (innerHeight - 120) + 60 + 'px';
         }
 
         function plusOne(x,y) {
@@ -166,70 +120,57 @@
             el.className = 'plus-one';
             el.textContent = '+1';
             el.style.left = x + 'px';
-            el.style.top = y + 'px';
+            el.style.top = (y-50) + 'px';
             document.body.appendChild(el);
-            setTimeout(() => el.remove(), 1000);
+            setTimeout(() => el.remove(), 800);
         }
 
         function startGame() {
-            startScreen.style.display = endScreen.style.display = 'none';
-            game.style.display = 'block';
-            score = 0; timeLeft = 30; level = 1; vx = vy = 9;
-            scoreEl.textContent = timerEl.textContent = levelEl.textContent = score = timeLeft = level = 0;
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('end-screen').style.display = 'none';
+            score = 0; time = 30; level = 1; vx = 8; vy = 8;
             scoreEl.textContent = 0; timerEl.textContent = 30; levelEl.textContent = 1;
-            active = true; randPos();
+            running = true;
+            randPos();
             clearInterval(timer);
             timer = setInterval(() => {
-                if (--timeLeft <= 0) endGame();
-                timerEl.textContent = timeLeft;
+                if (--time <= 0) { running = false; clearInterval(timer); 
+                    finalScore.textContent = score;
+                    finalLevel.textContent = level;
+                    document.getElementById('end-screen').style.display = 'flex';
+                }
+                timerEl.textContent = time;
             }, 1000);
-            requestAnimationFrame(move);
+            move();
         }
 
         function move() {
-            if (!active) return;
-            let x = parseFloat(p.style.left), y = parseFloat(p.style.top);
+            if (!running) return;
+            let x = parseFloat(p.style.left);
+            let y = parseFloat(p.style.top);
             x += vx; y += vy;
-            if (x < 70 || x > innerWidth-70) vx = -vx * 1.04;
-            if (y < 70 || y > innerHeight-70) vy = -vy * 1.04;
+            if (x < 60 || x > innerWidth-60) vx = -vx * 1.05;
+            if (y < 60 || y > innerHeight-60) vy = -vy * 1.05;
             p.style.left = x + 'px'; p.style.top = y + 'px';
             requestAnimationFrame(move);
         }
 
-        function catchPikachu(e) {
-            if (!active) return;
-            e.preventDefault();
-            score++;
-            scoreEl.textContent = score;
-            scoreEl.style.transform = 'scale(1.5)';
-            setTimeout(() => scoreEl.style.transform = '', 200);
-
-            const touch = e.touches ? e.touches[0] : e;
-            plusOne(touch.clientX, touch.clientY - 50);
-
-            const flash = document.createElement('div');
-            flash.className = 'lightning';
-            flash.style.left = touch.clientX + 'px';
-            flash.style.top = touch.clientY + 'px';
-            document.body.appendChild(flash);
-            setTimeout(() => flash.remove(), 700);
-
-            vx *= 1.22; vy *= 1.22;
+        p.addEventListener('click', e => { e.preventDefault(); if(!running) return;
+            score++; scoreEl.textContent = score;
+            plusOne(e.clientX, e.clientY);
+            vx *= 1.23; vy *= 1.23;
             if (score % 10 === 0) levelEl.textContent = ++level;
             randPos();
-        }
-
-        function endGame() {
-            active = false;
-            clearInterval(timer);
-            game.style.display = 'none';
-            finalScore.textContent = score;
-            finalLevel.textContent = level;
-            endScreen.style.display = 'flex';
-        }
-
-        p.addEventListener('click', catchPikachu);
-        p.addEventListener('touchstart', catchPikachu);
+        });
+        p.addEventListener('touchstart', e => { e.preventDefault(); 
+            const t = e.touches[0];
+            if(!running) return;
+            score++; scoreEl.textContent = score;
+            plusOne(t.clientX, t.clientY);
+            vx *= 1.23; vy *= 1.23;
+            if (score % 10 === 0) levelEl.textContent = ++level;
+            randPos();
+        });
     </script>
 </body>
 </html>
