@@ -6,79 +6,85 @@
     <title>Поймай Пикачу!</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body {
-            font-family: 'Press Start 2P', cursive;
-            background: #0b1b3a;
-            color: #fff;
-            height: 100dvh;
-            overflow: hidden;
-            image-rendering: pixelated;
-            background-image: 
-                radial-gradient(circle at 20% 80%, #5acaff 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, #fffd99 0%, transparent 50%),
-                linear-gradient(135deg, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%);
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{
+            font-family:'Press Start 2P',cursive;
+            background:#0b1b3a;
+            color:#fff;
+            height:100dvh;
+            overflow:hidden;
+            image-rendering:pixelated;
+            background-image:
+                radial-gradient(circle at 20% 80%,#5acaff 0%,transparent 50%),
+                radial-gradient(circle at 80% 20%,#fffd99 0%,transparent 50%),
+                linear-gradient(135deg,#1e5799 0%,#2989d8 50%,#207cca 51%,#7db9e8 100%);
         }
-        h1 { font-size: 3rem; text-shadow: 4px 4px 0 #ff0000; margin-bottom: 20px; }
-        button {
-            font-family: inherit;
-            font-size: 1.6rem;
-            padding: 20px 50px;
-            background: #ff0000;
-            color: #fff;
-            border: 6px solid #fff;
-            border-radius: 0;
-            box-shadow: 8px 8px 0 #000;
-            cursor: pointer;
+        h1{font-size:3rem;text-shadow:4px 4px 0 #ff0000;margin-bottom:30px;line-height:1.3;}
+        button{
+            font-family:inherit;
+            font-size:1.6rem;
+            padding:20px 50px;
+            background:#ff0000;
+            color:#fff;
+            border:6px solid #fff;
+            box-shadow:8px 8px 0 #000;
+            cursor:pointer;
+            transition:all .1s;
         }
-        button:active { transform: translate(4px,4px); box-shadow: 4px 4px 0 #000; }
+        button:active{transform:translate(4px,4px);box-shadow:4px 4px 0 #000;}
 
-        #ui {
-            position: fixed;
-            top: 15px; left: 15px; right: 15px;
-            display: flex;
-            justify-content: space-between;
-            z-index: 100;
-            pointer-events: none;
-            font-size: 1.4rem;
-            text-shadow: 3px 3px 0 #000;
+        #ui{
+            position:fixed;top:15px;left:15px;right:15px;
+            display:flex;justify-content:space-between;
+            z-index:100;pointer-events:none;
+            font-size:1.4rem;text-shadow:3px 3px 0 #000;
         }
-        #ui span { color: #ffff00; }
+        #ui span{color:#ffff00;}
 
-        #pikachu {
-            position: absolute;
-            width: 120px;
-            left: 50%; top: 50%;
-            transform: translate(-50%,-50%);
-            image-rendering: pixelated;
-            z-index: 10;
+        #pikachu{
+            position:absolute;width:120px;
+            transform:translate(-50%,-50%);
+            image-rendering:pixelated;z-index:10;
+            animation:pop .25s ease-out;
         }
+        @keyframes pop{from{transform:translate(-50%,-50%) scale(0);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
 
-        .plus-one {
-            position: absolute;
-            font-size: 3rem;
-            color: #ffff00;
-            text-shadow: 3px 3px 0 #ff0000;
-            pointer-events: none;
-            animation: up 0.8s forwards;
+        .plus-one{
+            position:absolute;font-size:3rem;color:#ffff00;
+            text-shadow:3px 3px 0 #ff0000;pointer-events:none;
+            animation:up .9s forwards;z-index:50;
         }
-        @keyframes up { to { transform: translateY(-100px); opacity: 0; } }
+        @keyframes up{to{transform:translateY(-120px);opacity:0}}
 
-        #start-screen, #end-screen {
-            position: fixed; inset: 0;
-            background: #000b;
-            backdrop-filter: blur(4px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            z-index: 200;
+        #start-screen,#end-screen{
+            position:fixed;inset:0;background:#000b;
+            backdrop-filter:blur(4px);display:flex;
+            flex-direction:column;align-items:center;
+            justify-content:center;text-align:center;z-index:200;
+            padding:20px;
         }
-        #final-score { font-size: 5rem; color: #ffff00; text-shadow: 5px 5px 0 #ff0000; }
+        #final-score{font-size:5rem;color:#ffff00;text-shadow:5px 5px 0 #ff0000;}
+        .share{
+            margin-top:40px;padding:18px 35px;
+            background:#00ff00;color:#000;
+            font-size:1.4rem;border:6px solid #fff;
+            box-shadow:8px 8px 0 #000;
+        }
+        .share:active{transform:translate(4px,4px);box-shadow:4px 4px 0 #000;}
+
+        @media (max-width:600px){
+            h1{font-size:1.8rem;}
+            button{font-size:1.2rem;padding:15px 35px;}
+            #ui{font-size:0.9rem;top:10px;}
+            #pikachu{width:100px;}
+            #final-score{font-size:3.5rem;}
+            .share{font-size:1.1rem;padding:14px 25px;}
+        }
     </style>
 </head>
 <body>
+
+    <audio id="hit" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="></audio>
 
     <div id="start-screen">
         <h1>ПОЙМАЙ<br>ПИКАЧУ!</h1>
@@ -96,81 +102,67 @@
     <div id="end-screen" style="display:none">
         <h1>ВРЕМЯ ВЫШЛО!</h1>
         <div id="final-score">0</div>
-        <p style="margin:30px 0; font-size:1.5rem">УРОВЕНЬ <span id="final-level">1</span></p>
+        <p style="margin:30px 0;font-size:1.5rem">УРОВЕНЬ <span id="final-level">1</span></p>
         <button onclick="startGame()">СНОВА</button>
+        <button class="share" onclick="window.location='https://t.me/+kjTWCeGm_TgxMDJi'">
+            СДЕЛАЙ СКРИН<br>И ОТПРАВЬ В КАНАЛ →<br>ЛУЧШИЙ РЕЗУЛЬТАТ ПОБЕДИТ!
+        </button>
     </div>
 
     <script>
-        const p = document.getElementById('pikachu');
-        const scoreEl = document.getElementById('score');
-        const timerEl = document.getElementById('timer');
-        const levelEl = document.getElementById('level');
-        const finalScore = document.getElementById('final-score');
-        const finalLevel = document.getElementById('final-level');
-        
-        let score = 0, time = 30, level = 1, vx = 8, vy = 8, running = false, timer;
+        const p=document.getElementById('pikachu'),hit=document.getElementById('hit');
+        const scoreEl=document.getElementById('score'),timerEl=document.getElementById('timer'),levelEl=document.getElementById('level');
+        const finalScore=document.getElementById('final-score'),finalLevel=document.getElementById('final-level');
+        let score=0,time=30,level=1,vx=8,vy=8,running=false;
+        const MAX_SPEED=28;
 
-        function randPos() {
-            p.style.left = Math.random() * (innerWidth - 120) + 60 + 'px';
-            p.style.top = Math.random() * (innerHeight - 120) + 60 + 'px';
+        function randPos(){
+            p.style.left=Math.random()*(innerWidth-120)+60+'px';
+            p.style.top=Math.random()*(innerHeight-120)+60+'px';
+            p.style.animation='none';
+            requestAnimationFrame(()=>p.style.animation='pop .25s ease-out');
         }
-
-        function plusOne(x,y) {
-            const el = document.createElement('div');
-            el.className = 'plus-one';
-            el.textContent = '+1';
-            el.style.left = x + 'px';
-            el.style.top = (y-50) + 'px';
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 800);
+        function plusOne(x,y){
+            const el=document.createElement('div');el.className='plus-one';el.textContent='+1';
+            el.style.left=x+'px';el.style.top=(y-50)+'px';document.body.appendChild(el);
+            setTimeout(()=>el.remove(),900);
         }
-
-        function startGame() {
-            document.getElementById('start-screen').style.display = 'none';
-            document.getElementById('end-screen').style.display = 'none';
-            score = 0; time = 30; level = 1; vx = 8; vy = 8;
-            scoreEl.textContent = 0; timerEl.textContent = 30; levelEl.textContent = 1;
-            running = true;
-            randPos();
-            clearInterval(timer);
-            timer = setInterval(() => {
-                if (--time <= 0) { running = false; clearInterval(timer); 
-                    finalScore.textContent = score;
-                    finalLevel.textContent = level;
-                    document.getElementById('end-screen').style.display = 'flex';
-                }
-                timerEl.textContent = time;
-            }, 1000);
+        function startGame(){
+            document.getElementById('start-screen').style.display='none';
+            document.getElementById('end-screen').style.display='none';
+            score=0;time=30;level=1;vx=8;vy=8;
+            scoreEl.textContent=0;timerEl.textContent=30;levelEl.textContent=1;
+            running=true;randPos();
+            clearInterval(window.t);window.t=setInterval(()=>{if(--time<=0)endGame();timerEl.textContent=time;},1000);
             move();
         }
-
-        function move() {
-            if (!running) return;
-            let x = parseFloat(p.style.left);
-            let y = parseFloat(p.style.top);
-            x += vx; y += vy;
-            if (x < 60 || x > innerWidth-60) vx = -vx * 1.05;
-            if (y < 60 || y > innerHeight-60) vy = -vy * 1.05;
-            p.style.left = x + 'px'; p.style.top = y + 'px';
+        function move(){
+            if(!running)return;
+            let x=parseFloat(p.style.left),y=parseFloat(p.style.top);
+            x+=vx;y+=vy;
+            if(x<60||x>innerWidth-60)vx=-vx*1.05;
+            if(y<60||y>innerHeight-60)vy=-vy*1.05;
+            p.style.left=x+'px';p.style.top=y+'px';
             requestAnimationFrame(move);
         }
-
-        p.addEventListener('click', e => { e.preventDefault(); if(!running) return;
-            score++; scoreEl.textContent = score;
-            plusOne(e.clientX, e.clientY);
-            vx *= 1.23; vy *= 1.23;
-            if (score % 10 === 0) levelEl.textContent = ++level;
+        function catchPikachu(e){
+            if(!running)return;e.preventDefault();
+            score++;scoreEl.textContent=score;
+            if(score%10===0)levelEl.textContent=++level;
+            const t=e.touches?e.touches[0]:e;
+            plusOne(t.clientX,t.clientY);
+            hit.currentTime=0;hit.play().catch(()=>{});if('vibrate'in navigator)navigator.vibrate(50);
+            vx=Math.sign(vx)*Math.min(Math.abs(vx)*1.23,MAX_SPEED);
+            vy=Math.sign(vy)*Math.min(Math.abs(vy)*1.23,MAX_SPEED);
             randPos();
-        });
-        p.addEventListener('touchstart', e => { e.preventDefault(); 
-            const t = e.touches[0];
-            if(!running) return;
-            score++; scoreEl.textContent = score;
-            plusOne(t.clientX, t.clientY);
-            vx *= 1.23; vy *= 1.23;
-            if (score % 10 === 0) levelEl.textContent = ++level;
-            randPos();
-        });
+        }
+        function endGame(){
+            running=false;clearInterval(window.t);
+            finalScore.textContent=score;finalLevel.textContent=level;
+            document.getElementById('end-screen').style.display='flex';
+        }
+        p.addEventListener('click',catchPikachu);
+        p.addEventListener('touchstart',catchPikachu);
     </script>
 </body>
 </html>
