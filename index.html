@@ -106,7 +106,8 @@
         const finalScore = document.getElementById('final-score'), finalLevel = document.getElementById('final-level');
 
         let score = 0, time = 30, level = 1, vx = 8, vy = 8, running = false;
-        const MAX_SPEED = 26;
+        const MAX_SPEED = 24;
+        const WALL_DAMPING = 0.92; // небольшое замедление при отскоке
         const PIKA_SIZE = 120; // ширина Пикачу в px
 
         // Функция безопасного телепорта
@@ -146,8 +147,8 @@
             x += vx; y += vy;
 
             // Жёсткие границы — никогда не улетит
-            if (x <= PIKA_SIZE/2 || x >= innerWidth - PIKA_SIZE/2) vx = -vx * 1.05;
-            if (y <= PIKA_SIZE/2 || y >= innerHeight - PIKA_SIZE/2) vy = -vy * 1.05;
+            if (x <= PIKA_SIZE/2 || x >= innerWidth - PIKA_SIZE/2) vx = -vx * WALL_DAMPING;
+            if (y <= PIKA_SIZE/2 || y >= innerHeight - PIKA_SIZE/2) vy = -vy * WALL_DAMPING;
 
             // Дополнительная страховка
             x = Math.max(PIKA_SIZE/2, Math.min(x, innerWidth - PIKA_SIZE/2));
@@ -167,7 +168,7 @@
             hit.currentTime=0;hit.play().catch(()=>{});
             navigator.vibrate?.([50]);
 
-            const boost = 1 + (score/300); // ещё медленнее растёт
+            const boost = 1 + (score/500); // более плавный рост скорости
             vx = Math.sign(vx)*Math.min(Math.abs(vx)*boost, MAX_SPEED);
             vy = Math.sign(vy)*Math.min(Math.abs(vy)*boost, MAX_SPEED);
 
